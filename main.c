@@ -1,6 +1,16 @@
-#include "philo.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/08 00:42:03 by coder             #+#    #+#             */
+/*   Updated: 2021/12/08 01:07:16 by coder            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int pool;
+#include "philo.h"
 
 void *print_hello(void *arg)
 {
@@ -38,27 +48,57 @@ void *print_hello(void *arg)
 	return NULL;
 }
 
-void	start_struct(t_thread_philo *philo, int id)
+void	start_struct(t_philo *philo, int num_philo)
 {
-	philo->id_philo = id;
-	philo->status = THINKING;
-	philo->left_hand = TRUE;
-	philo->right_hand = FALSE;
+	int count;
+
+	count = 0;
+	philo->thread_ph = ft_calloc(sizeof(t_thread_philo), num_philo);
+	philo->forks = ft_calloc(sizeof(pthread_mutex_t), num_philo);
+	pthread_mutex_init(&philo->print, NULL);
+	while(count < num_philo)
+	{
+		pthread_create(&philo->thread_ph[count], NULL, print_hello, (void *)&philo->thread_ph[count]);
+		pthread_mutex_init(&philo->forks[count], NULL);
+		philo->thread_ph->num = count;
+		philo->thread_ph->status = ALIVE;
+		philo->thread_ph->left_hand = count;
+		philo->thread_ph->right_hand = count + 1;
+		if (count == num_philo - 1)
+			philo->thread_ph->right_hand = count;
+		count++;
+	}
 }
-int signal = 1;
-CHAR WUOTE
+
+void print_line(t_thread_philo *philo, int status)
+{
+	pthread_mutex_lock(philo->print);
+	if (status == EATING)
+		printf("tempo, philo %i, eating!", philo->num);
+	else if (sttus == SLEAPING)
+		printf("tempo, philo %i, SLEAPING!", philo->num);
+	else if (status == THINKING)
+		printf("tempo, philo %i, THINKING!", philo->num);
+	pthread_mutex_unlock(philo->print);
+}
+
 int main()
 {
-	pool = 1;
-	t_thread_philo first_philo;
-	t_thread_philo second_philo;
-	start_struct(&first_philo, 1);
-	start_struct(&second_philo, 2);
-	second_philo.status = SLEAPING;
-	pthread_create(&first_philo.thread_ph, NULL, print_hello, (void *)&first_philo);
-	pthread_create(&second_philo.thread_ph, NULL, print_hello, (void *)&second_philo);
-	pthread_join(first_philo.thread_ph, NULL);
-	pthread_join(second_philo.thread_ph, NULL);
+	int count;
+
+	count = 0;
+	t_philo philo;
+	philo.num_philos = 3;
+	start_struct(&philo, philo.num_philos);
+	while(count < philo.num_philos)
+	{
+		if (!pthread_join(&philo.thread_ph[count], NULL))
+		{
+			printf("finish\n");
+			exit();
+		}
+		count++;
+	}
 	printf("congrats!!\n");
 	// pthread_t point;
 	// pthread_t point_two;
