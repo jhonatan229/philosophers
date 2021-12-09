@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 00:42:03 by coder             #+#    #+#             */
-/*   Updated: 2021/12/08 01:07:16 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/09 03:42:38 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,71 +15,43 @@
 void *print_hello(void *arg)
 {
 	t_thread_philo *philo = (t_thread_philo *)arg;
+	philo->time = philo->main_struct->t_start.tv_usec * 1000;
+	if (philo->num / 2 == 0)
+		usleep(1);
 	while (philo->status != DEAD)
 	{
-		if (philo->status == EATING){
-			printf("thread %d is EATING\n", philo->id_philo);
-			sleep(2);
-			philo->status = THINKING;
-			philo->right_hand = FALSE;
-			pool = 1;
-		}
-		else if (philo->status == THINKING)
-		{
-			printf("thread %d is THINKING\n", philo->id_philo);
-			sleep(1);
-			philo->status = SLEAPING;
-		}
-		else if (philo->status == SLEAPING)
-		{
-			printf("thread %d is SLEAPING\n", philo->id_philo);
-			sleep(2);
-			if (philo->left_hand == FALSE || philo->right_hand == FALSE)
-			{
-				if (philo->left_hand == FALSE && pool)
-					philo->left_hand = TRUE;
-				else if (philo->right_hand == FALSE && pool)
-					philo->right_hand = TRUE;
-				pool = 0;
-			}
-			philo->status = EATING;
-		}
+		if (try_eat(philo))
+			break;
+		if (try_sleep(philo))
+			break;
 	}
 	return NULL;
 }
 
-void	start_struct(t_philo *philo, int num_philo)
+void	start_struct(t_philo *philo, int num_philo, int time_eat)
 {
 	int count;
 
 	count = 0;
 	philo->thread_ph = ft_calloc(sizeof(t_thread_philo), num_philo);
 	philo->forks = ft_calloc(sizeof(pthread_mutex_t), num_philo);
+	philo->t_eat = time_eat;
+	philo->num_philos = num_philo;
 	pthread_mutex_init(&philo->print, NULL);
 	while(count < num_philo)
 	{
-		pthread_create(&philo->thread_ph[count], NULL, print_hello, (void *)&philo->thread_ph[count]);
+		pthread_create(&philo->thread_ph[count].thread, NULL, print_hello, (void *)&philo->thread_ph[count].thread);
 		pthread_mutex_init(&philo->forks[count], NULL);
 		philo->thread_ph->num = count;
 		philo->thread_ph->status = ALIVE;
 		philo->thread_ph->left_hand = count;
 		philo->thread_ph->right_hand = count + 1;
+		philo->thread_ph->main_struct = philo;
 		if (count == num_philo - 1)
 			philo->thread_ph->right_hand = count;
 		count++;
 	}
-}
-
-void print_line(t_thread_philo *philo, int status)
-{
-	pthread_mutex_lock(philo->print);
-	if (status == EATING)
-		printf("tempo, philo %i, eating!", philo->num);
-	else if (sttus == SLEAPING)
-		printf("tempo, philo %i, SLEAPING!", philo->num);
-	else if (status == THINKING)
-		printf("tempo, philo %i, THINKING!", philo->num);
-	pthread_mutex_unlock(philo->print);
+	gettimeofday(&philo->t_start, NULL);
 }
 
 int main()
@@ -88,14 +60,14 @@ int main()
 
 	count = 0;
 	t_philo philo;
-	philo.num_philos = 3;
-	start_struct(&philo, philo.num_philos);
+	start_struct(&philo, 3, 30);
+	
 	while(count < philo.num_philos)
 	{
-		if (!pthread_join(&philo.thread_ph[count], NULL))
+		if (!pthread_join(philo.thread_ph[count].thread, NULL))
 		{
 			printf("finish\n");
-			exit();
+			exit(0);
 		}
 		count++;
 	}
