@@ -6,36 +6,69 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 23:30:36 by coder             #+#    #+#             */
-/*   Updated: 2021/12/09 03:34:10 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/10 03:43:18 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long int	verify_time(t_thread_philo *philo)
+long int	ft_time(void)
 {
-	struct timeval time;
+	long int		milliseconds;
+	struct timeval	time;
+
 	gettimeofday(&time, NULL);
-	return (time.tv_usec * 1000) - philo->time;
+	milliseconds = time.tv_sec * 1000 + time.tv_usec / 1000;
+	return (milliseconds);
 }
 
-void	reset_time(t_thread_philo *philo)
+
+int	verify_time(t_thread_philo *philo)
 {
-	struct timeval time;
-	gettimeofday(&time, NULL);
-	philo->time = time.tv_usec * 1000;
+	if (philo->main_struct->status == DEAD)
+		return (1);
+	if (ft_time() - philo->time >= philo->main_struct->t_die)
+	{
+		drop_fork(philo);
+		print_line(philo, DEAD);
+		philo->main_struct->status = DEAD;
+		return (1);
+	}		
+	return (0);
 }
 
 void print_line(t_thread_philo *philo, int status)
 {
+	long int t;
+	
 	pthread_mutex_lock(&philo->main_struct->print);
+	t = ft_time() - philo->main_struct->t_start;
 	if (status == EATING)
-		printf("tempo, philo %i, eating!\n", philo->num);
+		printf("%lu, philo %i, eating!\n", t, philo->num);
 	else if (status == SLEAPING)
-		printf("tempo, philo %i, SLEAPING!\n", philo->num);
+		printf("%lu, philo %i, SLEAPING!\n", t, philo->num);
 	else if (status == THINKING)
-		printf("tempo, philo %i, THINKING!\n", philo->num);
+		printf("%lu, philo %i, THINKING!\n", t, philo->num);
 	else if (status == GET_FORK)
-		printf("tempo, philo %i, GET A FORK!\n", philo->num);
+		printf("%lu, philo %i, GET A FORK!\n", t, philo->num);
+	else if (status == DROP_FORK)
+		printf("%lu, philo %i, DROP A FORK!\n", t, philo->num);
+	else if (status == DEAD)
+		printf("%lu, philo %i, DEAD!\n", t, philo->num);
 	pthread_mutex_unlock(&philo->main_struct->print);
+}
+
+void free_all(t_philo *philo)
+{
+	int	count;
+
+	count = 0;
+	pthread_mutex_destroy(&philo->print);
+	while (count < philo->num_philos)
+	{
+		pthread_mutex_destroy(&philo->forks[count]);
+		count++;
+	}
+	free(philo->forks);
+	free(philo->thread_ph);
 }

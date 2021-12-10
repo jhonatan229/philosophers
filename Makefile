@@ -7,7 +7,7 @@ NAME = philo
 FILES = $(PATH_UTILS)ft_calloc.c $(PATH_UTILS)utils.c $(PATH_TREE)actions.c $(PATH_TREE)main.c 
 
 CC = clang
-CFLAGS = -Wextra -Werror -Wall
+CFLAGS = -Wextra -Werror -Wall -fsanitize=address
 RM = rm -rf
 
 OBJS = $(patsubst $(PATH_TREE)%.c, $(PATH_OBJS)%.o, $(FILES))
