@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 00:42:03 by coder             #+#    #+#             */
-/*   Updated: 2021/12/10 03:45:05 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/11 01:40:04 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,45 +29,63 @@ void *print_hello(void *arg)
 	return NULL;
 }
 
-void	start_struct(t_philo *philo, int num_philo, long int time_eat, long int time_die)
+void	start_struct(t_philo *philo)
 {
 	int count;
 
 	count = 0;
-	philo->thread_ph = ft_calloc(num_philo, sizeof(t_thread_philo));
-	philo->forks = malloc(sizeof(pthread_mutex_t) * num_philo);
-	philo->t_eat = time_eat;
-	philo->t_die = time_die;
-	philo->num_philos = num_philo;
+	philo->thread_ph = ft_calloc(philo->num_philos, sizeof(t_thread_philo));
+	philo->forks = malloc(sizeof(pthread_mutex_t) * philo->num_philos);
 	philo->status = ALIVE;
 	pthread_mutex_init(&philo->print, NULL);
-	while(count < num_philo)
+	while(count < philo->num_philos)
 	{
 		pthread_mutex_init(&philo->forks[count], NULL);
 		philo->thread_ph[count].num = count;
 		philo->thread_ph[count].left_hand = count;
 		philo->thread_ph[count].right_hand = count + 1;
 		philo->thread_ph[count].main_struct = philo;
-		if (count == num_philo - 1)
+		if (count == philo->num_philos - 1)
 		 	philo->thread_ph[count].right_hand = 0;
 		count++;
 	}
 	philo->t_start = ft_time();
 
 }
-int main()
+
+int	set_args_to_struct(t_philo *philo, char **argv)
+{
+	if (ft_isdigit(argv[1]) == 0 && argv[1])
+		philo->num_philos = ft_atoi(argv[1]);
+	if (ft_isdigit(argv[2]) == 0 && argv[2])
+		philo->t_die = ft_atoi(argv[2]);
+	if (ft_isdigit(argv[3]) == 0 && argv[3])
+		philo->t_eat = ft_atoi(argv[3]);
+	if (ft_isdigit(argv[4]) == 0 && argv[4])
+		philo->t_sleep = ft_atoi(argv[4]);
+	if (ft_isdigit(argv[5]) == 0 && argv[5])
+		philo->count_eat = ft_atoi(argv[5]);
+	return (0);
+}
+
+int main(int argc, char **argv)
 {
 	int count;
 
 	count = 0;
 	t_philo philo;
+	if (argc < 5)
+		return (1);
+	printf("args %i, char %i", argc, philo.num_philos);
 	memset(&philo, 0, sizeof(t_philo));
-	start_struct(&philo, 3, 300, 400);
+	set_args_to_struct(&philo, argv);
+	start_struct(&philo);
 	while (count < philo.num_philos)
 	{
 		pthread_create(&philo.thread_ph[count].thread, NULL, print_hello, (void *)&philo.thread_ph[count]);
 		count++;
 	}
+	printf("args %i, char %i", argc, philo.num_philos);
 	count = 0;
 	while(count < philo.num_philos)
 	{

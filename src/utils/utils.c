@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 23:30:36 by coder             #+#    #+#             */
-/*   Updated: 2021/12/10 03:43:18 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/11 01:51:59 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ int	verify_time(t_thread_philo *philo)
 		return (1);
 	if (ft_time() - philo->time >= philo->main_struct->t_die)
 	{
+		philo->main_struct->status = DEAD;
 		drop_fork(philo);
 		print_line(philo, DEAD);
-		philo->main_struct->status = DEAD;
 		return (1);
 	}		
 	return (0);
@@ -69,6 +69,8 @@ void free_all(t_philo *philo)
 		pthread_mutex_destroy(&philo->forks[count]);
 		count++;
 	}
-	free(philo->forks);
-	free(philo->thread_ph);
+	if (philo->forks)
+		free(philo->forks);
+	if (philo->thread_ph)
+		free(philo->thread_ph);
 }

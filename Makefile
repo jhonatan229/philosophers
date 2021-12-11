@@ -4,7 +4,8 @@ PATH_OBJS = $(PATH_TREE)objs/
 
 NAME = philo
 
-FILES = $(PATH_UTILS)ft_calloc.c $(PATH_UTILS)utils.c $(PATH_TREE)actions.c $(PATH_TREE)main.c 
+FILES = $(PATH_UTILS)ft_calloc.c $(PATH_UTILS)utils.c $(PATH_UTILS)ft_digit.c $(PATH_UTILS)ft_atoi.c \
+		$(PATH_TREE)actions.c $(PATH_TREE)main.c 
 
 CC = clang
 CFLAGS = -Wextra -Werror -Wall -fsanitize=address

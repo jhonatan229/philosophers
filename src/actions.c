@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 02:06:25 by coder             #+#    #+#             */
-/*   Updated: 2021/12/10 03:44:24 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/11 01:47:13 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,32 @@
 
 void	drop_fork(t_thread_philo *philo)
 {
-	pthread_mutex_unlock(&philo->main_struct->forks[philo->left_hand]);
-	print_line(philo, DROP_FORK);
-	pthread_mutex_unlock(&philo->main_struct->forks[philo->right_hand]);
-	print_line(philo, DROP_FORK);
+	if (pthread_mutex_unlock(&philo->main_struct->forks[philo->left_hand]) == 0)
+		print_line(philo, DROP_FORK);
+	if (pthread_mutex_unlock(&philo->main_struct->forks[philo->right_hand]) == 0)
+		print_line(philo, DROP_FORK);
 }
 
 int	get_fork(t_thread_philo *philo)
 {
-	pthread_mutex_lock(&philo->main_struct->forks[philo->left_hand]);
-	print_line(philo, GET_FORK);
-	pthread_mutex_lock(&philo->main_struct->forks[philo->right_hand]);
-	print_line(philo, GET_FORK);
-	return (1);
+	if (philo->main_struct->status == DEAD)
+		return (1);
+	if(pthread_mutex_lock(&philo->main_struct->forks[philo->left_hand]) == 0)
+		print_line(philo, GET_FORK);
+	if (philo->main_struct->status == DEAD)
+	{
+		drop_fork(philo);
+		return (1);
+	}
+	if (pthread_mutex_lock(&philo->main_struct->forks[philo->right_hand]) == 0)
+		print_line(philo, GET_FORK);
+	return (0);
 }
 
 int	try_eat(t_thread_philo *philo)
 {
-	if (verify_time(philo))
+	if(get_fork(philo))
 		return (1);
-	get_fork(philo);
 	if (verify_time(philo))
 		return (1);
 	usleep(philo->main_struct->t_eat * 1000);
@@ -50,7 +56,7 @@ int	try_sleep(t_thread_philo *philo)
 	if (verify_time(philo))
 		return (1);
 	print_line(philo, SLEAPING);
-	usleep(philo->main_struct->t_eat * 1000);
+	usleep(philo->main_struct->t_sleep * 1000);
 	if (verify_time(philo))
 		return (1);
 	return (0);

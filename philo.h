@@ -34,8 +34,10 @@ typedef struct s_philo{
 	int				num_philos;
 	int				status;
 	long int		t_eat;
+	long int		t_sleep;
 	long int		t_die;
 	long int		t_start;
+	int				count_eat;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print;
 }				t_philo;
@@ -49,5 +51,7 @@ int			verify_time(t_thread_philo *philo);
 void 		print_line(t_thread_philo *philo, int status);
 void		free_all(t_philo *philo);
 void		drop_fork(t_thread_philo *philo);
+int			ft_atoi(const char *nptr);
+int			ft_isdigit(char *str);
 
 #endif
