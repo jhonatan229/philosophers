@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 02:06:25 by coder             #+#    #+#             */
-/*   Updated: 2021/12/11 01:47:13 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/14 00:15:32 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,13 @@ int	try_eat(t_thread_philo *philo)
 		return (1);
 	if (verify_time(philo))
 		return (1);
+	print_line(philo, EATING);
 	usleep(philo->main_struct->t_eat * 1000);
+	philo->time = ft_time();
+	philo->num_eats--;
+	drop_fork(philo);
 	if (verify_time(philo))
 		return (1);
-	print_line(philo, EATING);
-	drop_fork(philo);
-	philo->time = ft_time();
 	return (0);
 }
 

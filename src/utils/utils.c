@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 23:30:36 by coder             #+#    #+#             */
-/*   Updated: 2021/12/11 01:51:59 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/14 00:41:59 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,19 @@ int	verify_time(t_thread_philo *philo)
 {
 	if (philo->main_struct->status == DEAD)
 		return (1);
-	if (ft_time() - philo->time >= philo->main_struct->t_die)
+	if (philo->num_eats == 0 && philo->status == ACTIVE)
+	{
+		philo->status = INATIVE;
+		philo->main_struct->philo_needs_eat--;
+		return (1);
+	}
+	if (ft_time() - philo->time >= philo->main_struct->t_die && philo->status == ACTIVE)
 	{
 		philo->main_struct->status = DEAD;
 		drop_fork(philo);
 		print_line(philo, DEAD);
 		return (1);
-	}		
+	}
 	return (0);
 }
 
@@ -51,8 +57,6 @@ void print_line(t_thread_philo *philo, int status)
 		printf("%lu, philo %i, THINKING!\n", t, philo->num);
 	else if (status == GET_FORK)
 		printf("%lu, philo %i, GET A FORK!\n", t, philo->num);
-	else if (status == DROP_FORK)
-		printf("%lu, philo %i, DROP A FORK!\n", t, philo->num);
 	else if (status == DEAD)
 		printf("%lu, philo %i, DEAD!\n", t, philo->num);
 	pthread_mutex_unlock(&philo->main_struct->print);
