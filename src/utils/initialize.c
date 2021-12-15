@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 00:52:33 by coder             #+#    #+#             */
-/*   Updated: 2021/12/14 01:03:01 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/15 19:55:07 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 void	start_struct(t_philo *philo)
 {
-	int count;
+	int	count;
 
 	count = -1;
 	philo->thread_ph = ft_calloc(philo->num_philos, sizeof(t_thread_philo));
 	philo->forks = malloc(sizeof(pthread_mutex_t) * philo->num_philos);
 	philo->status = ALIVE;
 	pthread_mutex_init(&philo->print, NULL);
-	while(++count < philo->num_philos)
+	while (++count < philo->num_philos)
 	{
 		pthread_mutex_init(&philo->forks[count], NULL);
 		philo->thread_ph[count].num_eats = philo->count_eat;
@@ -33,7 +33,7 @@ void	start_struct(t_philo *philo)
 		philo->thread_ph[count].right_hand = count + 1;
 		philo->thread_ph[count].main_struct = philo;
 		if (count == philo->num_philos - 1)
-		 	philo->thread_ph[count].right_hand = 0;
+			philo->thread_ph[count].right_hand = 0;
 	}
 	philo->t_start = ft_time();
 }
@@ -50,20 +50,38 @@ int	set_args_to_struct(t_philo *philo, char **argv)
 		philo->t_sleep = ft_atoi(argv[4]);
 	if (ft_isdigit(argv[5]) == 0 && argv[5])
 		philo->count_eat = ft_atoi(argv[5]);
-	
 	philo->philo_needs_eat = philo->num_philos;
 	return (0);
 }
 
 void	creating_philos(t_philo *philo)
 {
-	int count;
-	
+	int	count;
+
 	count = 0;
 	while (count < philo->num_philos)
 	{
-		pthread_create(&philo->thread_ph[count].thread, NULL, action, (void *)&philo->thread_ph[count]);
+		pthread_create(&philo->thread_ph[count].thread,
+			NULL, action, (void *)&philo->thread_ph[count]);
 		philo->t_start = ft_time();
 		count++;
 	}
+}
+
+int	valid_args(t_philo *philo)
+{
+	if (philo->num_philos == 0)
+		return (1);
+	if (philo->t_eat == 0)
+		return (1);
+	if (philo->t_sleep == 0)
+		return (1);
+	if (philo->t_die == 0)
+		return (1);
+	if (philo->num_philos == 1)
+	{
+		printf("0 1 has taken a fork\n%li 1 died\n", philo->t_die);
+		return (1);
+	}
+	return (0);
 }

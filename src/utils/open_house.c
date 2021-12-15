@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 00:57:48 by coder             #+#    #+#             */
-/*   Updated: 2021/12/14 01:03:26 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/15 18:02:07 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,29 @@
 
 void	*action(void *arg)
 {
-	t_thread_philo *philo = (t_thread_philo *)arg;
+	t_thread_philo	*philo;
+
+	philo = (t_thread_philo *)arg;
 	philo->time = ft_time();
 	if (philo->num % 2 == 0)
 		usleep(1 * 1000);
 	while (philo->main_struct->status != DEAD)
 	{
 		if (try_eat(philo))
-			break;
+			break ;
 		if (try_sleep(philo))
-			break;
+			break ;
 		print_line(philo, THINKING);
 	}
-	return NULL;
+	return (NULL);
 }
 
 void	start_dinner(t_philo *philo)
 {
-	int count;
+	int	count;
 
 	count = 0;
-	while(count < philo->num_philos)
+	while (count < philo->num_philos)
 	{
 		if (pthread_join(philo->thread_ph[count].thread, NULL))
 			exit(0);
