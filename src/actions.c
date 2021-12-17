@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 02:06:25 by coder             #+#    #+#             */
-/*   Updated: 2021/12/15 17:57:36 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/17 01:19:49 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,26 @@ void	drop_fork(t_thread_philo *philo)
 
 int	get_fork(t_thread_philo *philo)
 {
-	if (philo->main_struct->status == DEAD)
+	if (verify_time(philo))
 		return (1);
 	if (pthread_mutex_lock(&philo->main_struct->forks[philo->left_hand]) == 0)
-		print_line(philo, GET_FORK);
-	if (philo->main_struct->status == DEAD)
 	{
-		drop_fork(philo);
-		return (1);
+		if (verify_time(philo))
+		{
+			drop_fork(philo);
+			return (1);
+		}
+		print_line(philo, GET_FORK);
 	}
 	if (pthread_mutex_lock(&philo->main_struct->forks[philo->right_hand]) == 0)
+	{
+		if (verify_time(philo))
+		{
+			drop_fork(philo);
+			return (1);
+		}
 		print_line(philo, GET_FORK);
+	}
 	return (0);
 }
 
@@ -41,8 +50,13 @@ int	try_eat(t_thread_philo *philo)
 	if (verify_time(philo))
 		return (1);
 	print_line(philo, EATING);
-	usleep(philo->main_struct->t_eat * 1000);
 	philo->time = ft_time();
+	while (ft_time() - philo->time < philo->main_struct->t_eat)
+	{
+		if (verify_time(philo))
+			return (1);
+		usleep(1 * 1000);
+	}
 	philo->num_eats--;
 	drop_fork(philo);
 	if (verify_time(philo))
@@ -52,10 +66,18 @@ int	try_eat(t_thread_philo *philo)
 
 int	try_sleep(t_thread_philo *philo)
 {
+	long int	t;
+
 	if (verify_time(philo))
 		return (1);
 	print_line(philo, SLEAPING);
-	usleep(philo->main_struct->t_sleep * 1000);
+	t = ft_time();
+	while (ft_time() - t< philo->main_struct->t_sleep)
+	{
+		if (verify_time(philo))
+			return (1);
+		usleep(1 * 1000);
+	}
 	if (verify_time(philo))
 		return (1);
 	return (0);

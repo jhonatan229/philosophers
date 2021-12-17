@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 23:30:36 by coder             #+#    #+#             */
-/*   Updated: 2021/12/15 19:55:38 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/17 01:43:03 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,25 @@ long int	ft_time(void)
 	return (milliseconds);
 }
 
+long int	set_dead_time(t_thread_philo *philo, long int time)
+{
+	long int	t;
+
+	t = philo->main_struct->t_die;
+	while (t < time)
+		t += philo->main_struct->t_die;
+	if (t == time)
+		return (t);
+	return (t - philo->main_struct->t_die);
+}
+
 int	verify_time(t_thread_philo *philo)
 {
 	if (philo->main_struct->status == DEAD)
+	{
+		drop_fork(philo);
 		return (1);
+	}
 	if (philo->num_eats == 0 && philo->status == ACTIVE)
 	{
 		philo->status = INATIVE;
@@ -49,16 +64,19 @@ void	print_line(t_thread_philo *philo, int status)
 
 	pthread_mutex_lock(&philo->main_struct->print);
 	t = ft_time() - philo->main_struct->t_start;
-	if (status == EATING)
+	if (status == EATING && philo->main_struct->status != DEAD)
 		printf("%lu %i is eating\n", t, philo->num + 1);
-	else if (status == SLEAPING)
+	else if (status == SLEAPING && philo->main_struct->status != DEAD)
 		printf("%lu %i is sleeping\n", t, philo->num + 1);
-	else if (status == THINKING)
+	else if (status == THINKING && philo->main_struct->status != DEAD)
 		printf("%lu %i is thinking\n", t, philo->num + 1);
-	else if (status == GET_FORK)
+	else if (status == GET_FORK && philo->main_struct->status != DEAD)
 		printf("%lu %i has taken a fork\n", t, philo->num + 1);
 	else if (status == DEAD)
+	{
+		t = set_dead_time(philo, t);
 		printf("%lu %i died\n", t, philo->num + 1);
+	}
 	pthread_mutex_unlock(&philo->main_struct->print);
 }
 

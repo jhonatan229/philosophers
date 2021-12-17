@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 00:52:33 by coder             #+#    #+#             */
-/*   Updated: 2021/12/15 19:55:07 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/17 01:51:38 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void	start_struct(t_philo *philo)
 		if (count == philo->num_philos - 1)
 			philo->thread_ph[count].right_hand = 0;
 	}
-	philo->t_start = ft_time();
 }
 
 int	set_args_to_struct(t_philo *philo, char **argv)
@@ -59,24 +58,24 @@ void	creating_philos(t_philo *philo)
 	int	count;
 
 	count = 0;
+	philo->t_start = ft_time();
 	while (count < philo->num_philos)
 	{
 		pthread_create(&philo->thread_ph[count].thread,
 			NULL, action, (void *)&philo->thread_ph[count]);
-		philo->t_start = ft_time();
 		count++;
 	}
 }
 
 int	valid_args(t_philo *philo)
 {
-	if (philo->num_philos == 0)
+	if (philo->num_philos <= 0 || philo->num_philos > 200)
 		return (1);
-	if (philo->t_eat == 0)
+	if (philo->t_eat <= 0)
 		return (1);
-	if (philo->t_sleep == 0)
+	if (philo->t_sleep <= 0)
 		return (1);
-	if (philo->t_die == 0)
+	if (philo->t_die <= 0)
 		return (1);
 	if (philo->num_philos == 1)
 	{
