@@ -8,8 +8,8 @@ FILES = $(PATH_UTILS)ft_calloc.c $(PATH_UTILS)utils.c $(PATH_UTILS)ft_digit.c $(
 		$(PATH_UTILS)initialize.c $(PATH_UTILS)open_house.c \
 		$(PATH_TREE)actions.c $(PATH_TREE)main.c 
 
-CC = clang
-CFLAGS = -Wextra -Werror -Wall -fsanitize=address
+CC = gcc
+CFLAGS = -Wextra -Werror -Wall -fsanitize=leak
 RM = rm -rf
 
 OBJS = $(patsubst $(PATH_TREE)%.c, $(PATH_OBJS)%.o, $(FILES))

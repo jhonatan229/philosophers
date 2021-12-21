@@ -6,14 +6,14 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 00:39:19 by coder             #+#    #+#             */
-/*   Updated: 2021/12/15 17:58:39 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/22 00:07:02 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 //function add one place in my var num that is in function ft_atoi
-int static	ft_addnum(int *num, char c)
+static int	ft_addnum(int *num, char c)
 {
 	if (c >= '0' && c <= '9')
 	{
