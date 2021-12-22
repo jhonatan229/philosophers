@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 00:57:48 by coder             #+#    #+#             */
-/*   Updated: 2021/12/21 23:05:45 by coder            ###   ########.fr       */
+/*   Updated: 2021/12/22 02:13:55 by coder            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void	*action(void *arg)
 	t_thread_philo	*philo;
 
 	philo = (t_thread_philo *)arg;
-	philo->time = ft_time();
+	philo->time = philo->main_struct->t_start;
 	if (philo->num % 2 == 0)
-		usleep(1 * 1000);
+		usleep(2 * 1000);
 	while (philo->main_struct->status != DEAD)
 	{
 		if (try_eat(philo))
